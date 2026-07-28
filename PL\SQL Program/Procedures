@@ -1,0 +1,88 @@
+Procedure 1: Register Prescription
+CREATE OR REPLACE PROCEDURE register_prescription (
+
+    p_prescription_id NUMBER,
+    p_patient_id NUMBER,
+    p_doctor_id NUMBER
+
+)
+
+IS
+
+BEGIN
+
+    INSERT INTO prescriptions(
+
+        prescription_id,
+        patient_id,
+        doctor_id,
+        prescription_date,
+        status
+
+    )
+
+    VALUES(
+
+        p_prescription_id,
+        p_patient_id,
+        p_doctor_id,
+        SYSDATE,
+        'Pending'
+
+    );
+
+    COMMIT;
+
+END;
+/
+
+Procedure 2 – Restock Drug
+CREATE OR REPLACE PROCEDURE restock_drug (
+
+    p_batch_id NUMBER,
+
+    p_quantity NUMBER
+
+)
+
+IS
+
+BEGIN
+
+    UPDATE stock_batches
+
+    SET quantity = quantity + p_quantity
+
+    WHERE batch_id = p_batch_id;
+
+    COMMIT;
+
+END;
+/
+
+Procedure 3 – Dispense Drug
+CREATE OR REPLACE PROCEDURE dispense_drug (
+
+    p_batch_id NUMBER,
+
+    p_quantity NUMBER
+
+)
+
+IS
+
+BEGIN
+
+  UPDATE stock_batches
+
+    SET quantity = quantity - p_quantity
+
+    WHERE batch_id = p_batch_id
+
+    AND quantity >= p_quantity;
+
+    COMMIT;
+
+END;
+/
+
