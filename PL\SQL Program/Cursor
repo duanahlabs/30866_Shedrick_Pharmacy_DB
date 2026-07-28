@@ -1,0 +1,46 @@
+DECLARE
+
+CURSOR low_stock_cursor IS
+
+SELECT
+
+drug_id,
+
+quantity
+
+FROM stock_batches
+
+WHERE quantity < 50;
+
+v_record low_stock_cursor%ROWTYPE;
+
+BEGIN
+
+OPEN low_stock_cursor;
+
+LOOP
+
+FETCH low_stock_cursor
+
+INTO v_record;
+
+EXIT WHEN low_stock_cursor%NOTFOUND;
+
+DBMS_OUTPUT.PUT_LINE(
+
+'Drug ID: '
+
+|| v_record.drug_id ||
+
+' Quantity: '
+
+|| v_record.quantity
+
+);
+
+END LOOP;
+
+CLOSE low_stock_cursor;
+
+END;
+/
