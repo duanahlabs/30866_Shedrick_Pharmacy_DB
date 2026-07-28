@@ -1,0 +1,116 @@
+Package Specification
+CREATE OR REPLACE PACKAGE pharmacy_pkg IS
+
+    PROCEDURE register_prescription(
+
+        p_prescription_id NUMBER,
+
+        p_patient_id NUMBER,
+
+        p_doctor_id NUMBER
+
+    );
+
+    PROCEDURE dispense_drug(
+
+        p_batch_id NUMBER,
+
+        p_quantity NUMBER
+
+    );
+
+    FUNCTION check_stock(
+
+        p_batch_id NUMBER
+
+    )
+
+    RETURN NUMBER;
+
+END pharmacy_pkg;
+/
+
+Package Body
+
+CREATE OR REPLACE PACKAGE BODY pharmacy_pkg IS
+
+    PROCEDURE register_prescription(
+
+        p_prescription_id NUMBER,
+
+        p_patient_id NUMBER,
+
+        p_doctor_id NUMBER
+
+    )
+
+    IS
+
+    BEGIN
+
+        INSERT INTO prescriptions
+
+        VALUES(
+
+            p_prescription_id,
+
+            p_patient_id,
+
+            p_doctor_id,
+
+            SYSDATE,
+
+            'Pending'
+
+        );
+
+    END;
+
+    PROCEDURE dispense_drug(
+
+        p_batch_id NUMBER,
+
+        p_quantity NUMBER
+
+    )
+
+    IS
+
+    BEGIN
+
+        UPDATE stock_batches
+
+        SET quantity = quantity - p_quantity
+
+        WHERE batch_id = p_batch_id;
+
+    END;
+
+    FUNCTION check_stock(
+
+        p_batch_id NUMBER
+
+    )
+
+    RETURN NUMBER
+
+    IS
+
+        v_qty NUMBER;
+
+    BEGIN
+
+        SELECT quantity
+
+        INTO v_qty
+
+        FROM stock_batches
+
+        WHERE batch_id = p_batch_id;
+
+        RETURN v_qty;
+
+    END;
+
+END pharmacy_pkg;
+/
