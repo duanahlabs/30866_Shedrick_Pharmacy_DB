@@ -1,0 +1,26 @@
+CREATE OR REPLACE FUNCTION check_stock (
+
+    p_batch_id NUMBER
+
+)
+
+RETURN NUMBER
+
+IS
+
+    v_quantity NUMBER;
+
+BEGIN
+
+    SELECT quantity
+
+    INTO v_quantity
+
+    FROM stock_batches
+
+    WHERE batch_id = p_batch_id;
+
+    RETURN v_quantity;
+
+END;
+/
