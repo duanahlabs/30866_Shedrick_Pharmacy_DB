@@ -1,3 +1,4 @@
+Function 1 – Check Stock Level
 CREATE OR REPLACE FUNCTION check_stock (
 
     p_batch_id NUMBER
@@ -21,6 +22,37 @@ BEGIN
     WHERE batch_id = p_batch_id;
 
     RETURN v_quantity;
+
+END;
+/
+
+
+Function 2 – Expiry Status
+CREATE OR REPLACE FUNCTION expiry_status (
+
+    p_expiry_date DATE
+
+)
+
+RETURN VARCHAR2
+
+IS
+
+BEGIN
+
+    IF p_expiry_date < SYSDATE THEN
+
+        RETURN 'Expired';
+
+    ELSIF p_expiry_date <= SYSDATE + 30 THEN
+
+        RETURN 'Near Expiry';
+
+    ELSE
+
+        RETURN 'Valid';
+
+    END IF;
 
 END;
 /
