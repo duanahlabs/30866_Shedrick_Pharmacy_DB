@@ -1,22 +1,15 @@
 BEGIN
-
-UPDATE stock_batches
-
-SET quantity = quantity - 20
-
-WHERE batch_id = 1;
-
-SAVEPOINT stock_update;
-
-UPDATE stock_batches
-
-SET quantity = quantity - 5000
-
-WHERE batch_id = 1;
-
-ROLLBACK TO stock_update;
-
-COMMIT;
-
+    UPDATE stock_batches
+    SET quantity_available = quantity_available - 20
+    WHERE batch_id = 1;
+ 
+    SAVEPOINT stock_update;
+ 
+    UPDATE stock_batches
+    SET quantity_available = quantity_available - 5000
+    WHERE batch_id = 1;
+ 
+    ROLLBACK TO stock_update;
+    COMMIT;
 END;
 /
