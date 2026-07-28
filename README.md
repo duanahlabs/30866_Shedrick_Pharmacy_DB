@@ -254,3 +254,24 @@ Every table uses a single-column surrogate key (`*_id`), so there is no composit
 No non-key attribute depends on another non-key attribute. For example, **doctor_name** is not stored redundantly in **PRESCRIPTIONS**; it exists only in **DOCTORS** and is referenced through **doctor_id**. The same principle applies to **drug_name** (stored only in **DRUGS**, not repeated in **STOCK_BATCHES** or **PRESCRIPTION_ITEMS**) and **supplier_name** (stored only in **SUPPLIERS**, not repeated in **STOCK_BATCHES**).
 
 This is also why **unit_price** is stored in **DRUGS** rather than being copied into every **DISPENSING** row. If the selling price at the time of dispensing must be preserved, it becomes an explicit attribute of **SALES** or **DISPENSING**, making it a deliberate design choice rather than a normalization violation.
+
+# Phase IV — Database Creation
+
+**Project:** Pharmacy Inventory & Prescription Tracking System
+**Naming convention:** `30866_Shedrick_Pharmacy_DB`
+
+## What this folder contains
+
+- `create_user_and_grants.sql` — the script that creates the `30866_Shedrick_Pharmacy_DB` Oracle user and grants it the privileges needed for the rest of the project (creating tables, sequences, procedures, and triggers in later phases).
+- `oem_user_creation.png` — OEM screenshot showing the user listed under Security → Users.
+- `oem_privileges.png` — OEM screenshot showing the granted system privileges for the user.
+- `oem_login_confirmation.png` — screenshot showing a successful connection as `30866_Shedrick_Pharmacy_DB`.
+
+## What the script does
+
+1. Creates the Oracle user/schema `30866_Shedrick_Pharmacy_DB` with a default and temporary tablespace and unlimited quota.
+2. Grants `CREATE SESSION` so the user can log in.
+3. Grants `CREATE TABLE`, `CREATE SEQUENCE`, `CREATE PROCEDURE`, and `CREATE TRIGGER` — the privileges required for Phases V, VI, and VII.
+4. Grants `CREATE VIEW` and `CREATE SYNONYM` for optional reporting/BI use in the innovation component.
+5. Verifies the setup by connecting as the new user.
+
