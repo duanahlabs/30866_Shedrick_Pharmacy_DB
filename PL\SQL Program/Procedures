@@ -1,88 +1,85 @@
+Procedure: safe_stock_check
+CREATE OR REPLACE PROCEDURE safe_stock_check(
+    p_batch_id NUMBER
+) IS
+    v_quantity NUMBER;
+BEGIN
+    SELECT quantity_available
+    INTO v_quantity
+    FROM stock_batches
+    WHERE batch_id = p_batch_id;
+ 
+    DBMS_OUTPUT.PUT_LINE('Quantity available: ' || v_quantity);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Batch does not exist.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+/
+
+Standalone procedures
+ 
 Procedure 1: Register Prescription
 CREATE OR REPLACE PROCEDURE register_prescription (
-
     p_prescription_id NUMBER,
-    p_patient_id NUMBER,
-    p_doctor_id NUMBER
-
-)
-
-IS
-
+    p_patient_id      NUMBER,
+    p_doctor_id       NUMBER
+) IS
 BEGIN
-
-    INSERT INTO prescriptions(
-
-        prescription_id,
-        patient_id,
-        doctor_id,
-        prescription_date,
-        status
-
-    )
-
-    VALUES(
-
-        p_prescription_id,
-        p_patient_id,
-        p_doctor_id,
-        SYSDATE,
-        'Pending'
-
+    INSERT INTO prescriptions (
+        prescription_id, patient_id, doctor_id, prescription_date, status
+    ) VALUES (
+        p_prescription_id, p_patient_id, p_doctor_id, SYSDATE, 'Pending'
     );
-
     COMMIT;
-
 END;
 /
-
-Procedure 2 – Restock Drug
+ 
+Procedure 2: Restock Drug 
 CREATE OR REPLACE PROCEDURE restock_drug (
-
     p_batch_id NUMBER,
-
     p_quantity NUMBER
-
-)
-
-IS
-
+) IS
 BEGIN
-
     UPDATE stock_batches
-
-    SET quantity = quantity + p_quantity
-
+    SET quantity_received  = quantity_received + p_quantity,
+        quantity_available = quantity_available + p_quantity
     WHERE batch_id = p_batch_id;
-
     COMMIT;
-
 END;
 /
-
-Procedure 3 – Dispense Drug
+ 
+Procedure 3: Dispense Drug
 CREATE OR REPLACE PROCEDURE dispense_drug (
-
-    p_batch_id NUMBER,
-
-    p_quantity NUMBER
-
-)
-
-IS
-
+    p_prescription_item_id NUMBER,
+    p_batch_id             NUMBER,
+    p_employee_id           NUMBER,
+    p_quantity              NUMBER
+) IS
+    v_dispensing_id NUMBER;
 BEGIN
-
-  UPDATE stock_batches
-
-    SET quantity = quantity - p_quantity
-
+    UPDATE stock_batches
+    SET quantity_available = quantity_available - p_quantity
     WHERE batch_id = p_batch_id
-
-    AND quantity >= p_quantity;
-
+      AND quantity_available >= p_quantity;
+ 
+    IF SQL%ROWCOUNT = 0 THEN
+        RAISE_APPLICATION_ERROR(-20030, 'Insufficient stock in this batch.');
+    END IF;
+ 
+    SELECT NVL(MAX(dispensing_id), 0) + 1
+    INTO v_dispensing_id
+    FROM dispensing;
+ 
+    INSERT INTO dispensing (
+        dispensing_id, prescription_item_id, batch_id,
+        employee_id, quantity_dispensed, dispensing_date
+    ) VALUES (
+        v_dispensing_id, p_prescription_item_id, p_batch_id,
+        p_employee_id, p_quantity, SYSDATE
+    );
+ 
     COMMIT;
-
 END;
 /
-
