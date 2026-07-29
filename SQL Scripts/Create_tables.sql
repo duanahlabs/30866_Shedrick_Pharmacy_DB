@@ -1,4 +1,20 @@
-SUPPLIERS 
+-- Goes in: SQL Scripts/Create_tables.sql
+-- (Full corrected table DDL — adds SALES, fixes STOCK_BATCHES supplier
+-- link and received/available split, fixes DISPENSING batch tracking)
+
+DROP TABLE dispensing        CASCADE CONSTRAINTS PURGE;
+DROP TABLE sales             CASCADE CONSTRAINTS PURGE;
+DROP TABLE prescription_items CASCADE CONSTRAINTS PURGE;
+DROP TABLE prescriptions     CASCADE CONSTRAINTS PURGE;
+DROP TABLE stock_batches     CASCADE CONSTRAINTS PURGE;
+DROP TABLE drugs             CASCADE CONSTRAINTS PURGE;
+DROP TABLE doctors           CASCADE CONSTRAINTS PURGE;
+DROP TABLE patients          CASCADE CONSTRAINTS PURGE;
+DROP TABLE employees         CASCADE CONSTRAINTS PURGE;
+DROP TABLE suppliers         CASCADE CONSTRAINTS PURGE;
+DROP TABLE public_holidays   CASCADE CONSTRAINTS PURGE;
+DROP TABLE audit_log         CASCADE CONSTRAINTS PURGE;
+
 CREATE TABLE suppliers (
     supplier_id     NUMBER PRIMARY KEY,
     supplier_name   VARCHAR2(100) NOT NULL,
@@ -8,7 +24,6 @@ CREATE TABLE suppliers (
     address         VARCHAR2(200)
 );
 
-DRUGS
 CREATE TABLE drugs (
     drug_id         NUMBER PRIMARY KEY,
     drug_name       VARCHAR2(100) NOT NULL UNIQUE,
@@ -20,7 +35,6 @@ CREATE TABLE drugs (
     reorder_level   NUMBER CHECK (reorder_level >= 0)
 );
 
-STOCK_BATCHES 
 CREATE TABLE stock_batches (
     batch_id            NUMBER PRIMARY KEY,
     drug_id             NUMBER NOT NULL,
@@ -31,17 +45,12 @@ CREATE TABLE stock_batches (
     manufacture_date    DATE,
     expiry_date         DATE,
     date_received       DATE DEFAULT SYSDATE,
-    CONSTRAINT chk_expiry
-        CHECK (expiry_date > manufacture_date),
-    CONSTRAINT chk_available_le_received
-        CHECK (quantity_available <= quantity_received),
-    CONSTRAINT fk_batch_drug
-        FOREIGN KEY (drug_id) REFERENCES drugs(drug_id),
-    CONSTRAINT fk_batch_supplier
-        FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+    CONSTRAINT chk_expiry CHECK (expiry_date > manufacture_date),
+    CONSTRAINT chk_available_le_received CHECK (quantity_available <= quantity_received),
+    CONSTRAINT fk_batch_drug FOREIGN KEY (drug_id) REFERENCES drugs(drug_id),
+    CONSTRAINT fk_batch_supplier FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
 );
 
- PATIENTS
 CREATE TABLE patients (
     patient_id      NUMBER PRIMARY KEY,
     first_name      VARCHAR2(50) NOT NULL,
@@ -51,7 +60,6 @@ CREATE TABLE patients (
     phone           VARCHAR2(20) UNIQUE
 );
 
-DOCTORS (unchanged)
 CREATE TABLE doctors (
     doctor_id       NUMBER PRIMARY KEY,
     first_name      VARCHAR2(50) NOT NULL,
@@ -60,47 +68,36 @@ CREATE TABLE doctors (
     phone           VARCHAR2(20) UNIQUE
 );
 
-
-EMPLOYEES
 CREATE TABLE employees (
     employee_id     NUMBER PRIMARY KEY,
     first_name      VARCHAR2(50),
     last_name       VARCHAR2(50),
-    role            VARCHAR2(40)
-        CHECK (role IN ('Pharmacist','Cashier','InventoryManager','Admin')),
+    role            VARCHAR2(40) CHECK (role IN ('Pharmacist','Cashier','InventoryManager','Admin')),
     username        VARCHAR2(50) UNIQUE,
     hire_date       DATE,
     phone           VARCHAR2(20) UNIQUE
 );
 
-PRESCRIPTIONS 
 CREATE TABLE prescriptions (
     prescription_id     NUMBER PRIMARY KEY,
     patient_id          NUMBER NOT NULL,
     doctor_id           NUMBER NOT NULL,
     prescription_date   DATE DEFAULT SYSDATE,
-    status              VARCHAR2(20)
-        CHECK (status IN ('Pending','Dispensed','Cancelled')),
-    CONSTRAINT fk_pres_patient
-        FOREIGN KEY (patient_id) REFERENCES patients(patient_id),
-    CONSTRAINT fk_pres_doctor
-        FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id)
+    status              VARCHAR2(20) CHECK (status IN ('Pending','Dispensed','Cancelled')),
+    CONSTRAINT fk_pres_patient FOREIGN KEY (patient_id) REFERENCES patients(patient_id),
+    CONSTRAINT fk_pres_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id)
 );
 
-PRESCRIPTION_ITEMS 
 CREATE TABLE prescription_items (
     prescription_item_id   NUMBER PRIMARY KEY,
     prescription_id        NUMBER NOT NULL,
     drug_id                NUMBER NOT NULL,
     quantity_prescribed     NUMBER CHECK (quantity_prescribed > 0),
     dosage_instructions     VARCHAR2(100),
-    CONSTRAINT fk_item_prescription
-        FOREIGN KEY (prescription_id) REFERENCES prescriptions(prescription_id),
-    CONSTRAINT fk_item_drug
-        FOREIGN KEY (drug_id) REFERENCES drugs(drug_id)
+    CONSTRAINT fk_item_prescription FOREIGN KEY (prescription_id) REFERENCES prescriptions(prescription_id),
+    CONSTRAINT fk_item_drug FOREIGN KEY (drug_id) REFERENCES drugs(drug_id)
 );
 
-DISPENSING 
 CREATE TABLE dispensing (
     dispensing_id           NUMBER PRIMARY KEY,
     prescription_item_id    NUMBER NOT NULL,
@@ -108,37 +105,28 @@ CREATE TABLE dispensing (
     employee_id              NUMBER NOT NULL,
     quantity_dispensed        NUMBER CHECK (quantity_dispensed > 0),
     dispensing_date          DATE DEFAULT SYSDATE,
-    CONSTRAINT fk_disp_item
-        FOREIGN KEY (prescription_item_id) REFERENCES prescription_items(prescription_item_id),
-    CONSTRAINT fk_disp_batch
-        FOREIGN KEY (batch_id) REFERENCES stock_batches(batch_id),
-    CONSTRAINT fk_disp_employee
-        FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+    CONSTRAINT fk_disp_item FOREIGN KEY (prescription_item_id) REFERENCES prescription_items(prescription_item_id),
+    CONSTRAINT fk_disp_batch FOREIGN KEY (batch_id) REFERENCES stock_batches(batch_id),
+    CONSTRAINT fk_disp_employee FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
 );
 
-SALES 
 CREATE TABLE sales (
     sale_id         NUMBER PRIMARY KEY,
-    prescription_id NUMBER NOT NULL UNIQUE,   -- enforces the 1:1 with PRESCRIPTIONS
-    employee_id     NUMBER NOT NULL,          -- the cashier
+    prescription_id NUMBER NOT NULL UNIQUE,
+    employee_id     NUMBER NOT NULL,
     total_amount    NUMBER(10,2) CHECK (total_amount >= 0),
     payment_date    DATE DEFAULT SYSDATE,
-    payment_method  VARCHAR2(20)
-        CHECK (payment_method IN ('Cash','Card','MobileMoney','Insurance')),
-    CONSTRAINT fk_sale_prescription
-        FOREIGN KEY (prescription_id) REFERENCES prescriptions(prescription_id),
-    CONSTRAINT fk_sale_employee
-        FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+    payment_method  VARCHAR2(20) CHECK (payment_method IN ('Cash','Card','MobileMoney','Insurance')),
+    CONSTRAINT fk_sale_prescription FOREIGN KEY (prescription_id) REFERENCES prescriptions(prescription_id),
+    CONSTRAINT fk_sale_employee FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
 );
 
-PUBLIC_HOLIDAYS (unchanged)
 CREATE TABLE public_holidays (
     holiday_id      NUMBER PRIMARY KEY,
     holiday_date    DATE UNIQUE,
     holiday_name    VARCHAR2(100)
 );
 
-AUDIT_LOG 
 CREATE TABLE audit_log (
     audit_id        NUMBER PRIMARY KEY,
     table_name      VARCHAR2(50),
