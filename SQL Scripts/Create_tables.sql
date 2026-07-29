@@ -1,7 +1,3 @@
--- Goes in: SQL Scripts/Create_tables.sql
--- (Full corrected table DDL — adds SALES, fixes STOCK_BATCHES supplier
--- link and received/available split, fixes DISPENSING batch tracking)
-
 DROP TABLE dispensing        CASCADE CONSTRAINTS PURGE;
 DROP TABLE sales             CASCADE CONSTRAINTS PURGE;
 DROP TABLE prescription_items CASCADE CONSTRAINTS PURGE;
