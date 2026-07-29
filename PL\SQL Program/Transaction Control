@@ -5,16 +5,11 @@ BEGIN
 
     SAVEPOINT stock_update;
 
-    BEGIN
-        UPDATE stock_batches
-        SET quantity_available = quantity_available - 5000
-        WHERE batch_id = 1;
-    EXCEPTION
-        WHEN OTHERS THEN
-            DBMS_OUTPUT.PUT_LINE('Second update failed, rolling back to savepoint: ' || SQLERRM);
-            ROLLBACK TO stock_update;
-    END;
+    UPDATE stock_batches
+    SET quantity_available = quantity_available - 5000
+    WHERE batch_id = 1;
 
+    ROLLBACK TO stock_update;
     COMMIT;
 END;
 /
