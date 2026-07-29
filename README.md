@@ -34,7 +34,7 @@ An Oracle database solution for a single-branch pharmacy that manages drug stock
 | `07_advanced_plsql/` | VII | Triggers, audit logging system, weekday/holiday DML-blocking business rule |
 | `08_presentation/` | VIII | Final max-10-slide presentation |
 
-# Phase II — Business Process Modeling (MIS)
+# Business Process Modeling (MIS)
 
 ---
 
@@ -159,53 +159,7 @@ The payment step, handled by the cashier, is modeled as running in parallel with
 - **EMPLOYEES** 1:M **DISPENSING** and 1:M **SALES**
 - **PRESCRIPTIONS** 1:1 **SALES**
 
-# Pharmacy Management System - Process Flow (BPMN Swimlane)
-
-This document outlines the business process workflow for prescription handling, inventory deduction, dispensing, and sales processing across different roles in the system.
-
----
-
-## BPMN Swimlane Diagram
-
-```mermaid
-flowchart TB
-  %% Subgraphs act as Swimlanes for each Role/Actor
-
-  subgraph PATIENT["👤 Patient"]
-    A([Start: Patient Visit]) --> B[Receive Prescription]
-    B --> C[Submit Prescription to Pharmacy]
-    N[Make Payment] --> O[Receive Dispensed Medication & Receipt] --> P([End])
-  end
-
-  subgraph DOCTOR["🩺 Doctor"]
-    C --> D[Examine Patient]
-    D --> E[Issue & Sign Prescription]
-    E --> F[Record Prescription in System]
-  end
-
-  subgraph PHARMACIST["💊 Pharmacist / Employee"]
-    F --> G[Retrieve Prescription Items]
-    G --> H{Stock Available?}
-    H -- No --> I[Notify Patient / Reorder Stock] --> P
-    H -- Yes --> J[Deduct Quantity from Stock Batch]
-    J --> K[Dispense Medication]
-    K --> L[Record Dispensing Details]
-  end
-
-  subgraph CASHIER["💳 Cashier / Sales System"]
-    L --> M[Generate Invoice / Sale Record]
-    M --> N
-  end
-
-  %% Styling Swimlanes
-  style PATIENT fill:#f9f9f9,stroke:#333,stroke-width:1px
-  style DOCTOR fill:#f0f7ff,stroke:#333,stroke-width:1px
-  style PHARMACIST fill:#f5fff0,stroke:#333,stroke-width:1px
-  style CASHIER fill:#fffbf0,stroke:#333,stroke-width:1px
-```
-
----
-
+#
 ## Process Breakdown
 
 ### 1. Patient Visit & Consultation
@@ -255,7 +209,7 @@ No non-key attribute depends on another non-key attribute. For example, **doctor
 
 This is also why **unit_price** is stored in **DRUGS** rather than being copied into every **DISPENSING** row. If the selling price at the time of dispensing must be preserved, it becomes an explicit attribute of **SALES** or **DISPENSING**, making it a deliberate design choice rather than a normalization violation.
 
-# Phase IV — Database Creation
+# Database Creation
 
 **Project:** Pharmacy Inventory & Prescription Tracking System
 **Naming convention:** `30866_Shedrick_Pharmacy_DB`
