@@ -1,48 +1,18 @@
 CREATE OR REPLACE PROCEDURE safe_stock_check(
-
-p_batch_id NUMBER
-
-)
-
-IS
-
-v_quantity NUMBER;
-
+    p_batch_id NUMBER
+) IS
+    v_quantity NUMBER;
 BEGIN
+    SELECT quantity_available
+    INTO v_quantity
+    FROM stock_batches
+    WHERE batch_id = p_batch_id;
 
-SELECT quantity
-
-INTO v_quantity
-
-FROM stock_batches
-
-WHERE batch_id = p_batch_id;
-
-DBMS_OUTPUT.PUT_LINE(
-
-'Quantity: '
-
-|| v_quantity
-
-);
-
+    DBMS_OUTPUT.PUT_LINE('Quantity available: ' || v_quantity);
 EXCEPTION
-
-WHEN NO_DATA_FOUND THEN
-
-DBMS_OUTPUT.PUT_LINE(
-
-'Batch does not exist.'
-
-);
-
-WHEN OTHERS THEN
-
-DBMS_OUTPUT.PUT_LINE(
-
-SQLERRM
-
-);
-
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Batch does not exist.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
 /
