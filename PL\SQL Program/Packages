@@ -1,4 +1,3 @@
-Package Specification
 CREATE OR REPLACE PACKAGE pharmacy_pkg IS
     PROCEDURE register_prescription(
         p_prescription_id NUMBER,
@@ -16,9 +15,9 @@ CREATE OR REPLACE PACKAGE pharmacy_pkg IS
     ) RETURN NUMBER;
 END pharmacy_pkg;
 /
- 
+
 CREATE OR REPLACE PACKAGE BODY pharmacy_pkg IS
- 
+
     PROCEDURE register_prescription(
         p_prescription_id NUMBER,
         p_patient_id      NUMBER,
@@ -28,7 +27,7 @@ CREATE OR REPLACE PACKAGE BODY pharmacy_pkg IS
         INSERT INTO prescriptions
         VALUES (p_prescription_id, p_patient_id, p_doctor_id, SYSDATE, 'Pending');
     END;
- 
+
     PROCEDURE dispense_drug(
         p_prescription_item_id NUMBER,
         p_batch_id              NUMBER,
@@ -41,15 +40,15 @@ CREATE OR REPLACE PACKAGE BODY pharmacy_pkg IS
         SET quantity_available = quantity_available - p_quantity
         WHERE batch_id = p_batch_id
           AND quantity_available >= p_quantity;
- 
+
         IF SQL%ROWCOUNT = 0 THEN
             RAISE_APPLICATION_ERROR(-20030, 'Insufficient stock in this batch.');
         END IF;
- 
+
         SELECT NVL(MAX(dispensing_id), 0) + 1
         INTO v_dispensing_id
         FROM dispensing;
- 
+
         INSERT INTO dispensing (
             dispensing_id, prescription_item_id, batch_id,
             employee_id, quantity_dispensed, dispensing_date
@@ -58,7 +57,7 @@ CREATE OR REPLACE PACKAGE BODY pharmacy_pkg IS
             p_employee_id, p_quantity, SYSDATE
         );
     END;
- 
+
     FUNCTION check_stock(
         p_batch_id NUMBER
     ) RETURN NUMBER IS
@@ -68,10 +67,9 @@ CREATE OR REPLACE PACKAGE BODY pharmacy_pkg IS
         INTO v_qty
         FROM stock_batches
         WHERE batch_id = p_batch_id;
- 
+
         RETURN v_qty;
     END;
- 
+
 END pharmacy_pkg;
 /
- 
