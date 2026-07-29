@@ -1,3 +1,4 @@
+-- Goes in: PL\SQL Program/audit_triggers.sql
 CREATE SEQUENCE audit_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
 CREATE OR REPLACE TRIGGER trg_audit_drugs
@@ -17,6 +18,8 @@ BEGIN
 END;
 /
 
+-- added: STOCK_BATCHES and DISPENSING were previously unaudited,
+-- even though they're the most business-critical tables
 CREATE OR REPLACE TRIGGER trg_audit_stock_batches
 AFTER INSERT OR UPDATE OR DELETE ON stock_batches
 FOR EACH ROW
