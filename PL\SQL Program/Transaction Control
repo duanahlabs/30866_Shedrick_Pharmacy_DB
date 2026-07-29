@@ -1,15 +1,18 @@
 BEGIN
-    UPDATE stock_batches
-    SET quantity_available = quantity_available - 20
+
+    UPDATE STOCK_BATCHES
+    SET quantity_available = quantity_available - 10
     WHERE batch_id = 1;
 
     SAVEPOINT stock_update;
 
-    UPDATE stock_batches
-    SET quantity_available = quantity_available - 5000
+    UPDATE STOCK_BATCHES
+    SET quantity_available = quantity_available - 50
     WHERE batch_id = 1;
 
     ROLLBACK TO stock_update;
+
     COMMIT;
+
 END;
 /
