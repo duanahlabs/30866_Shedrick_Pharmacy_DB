@@ -1,1 +1,69 @@
+-- Goes in: PL\SQL Program/Security Restriction
+-- Business rule: block INSERT/UPDATE/DELETE on weekdays and public
+-- holidays. RUN THIS LAST -- once it exists, it blocks further
+-- inserts on drugs/stock_batches/dispensing on weekdays, including
+-- your own testing. Broadened from "drugs only" to all three
+-- transactional tables so the rule actually protects the database.
 
+CREATE OR REPLACE TRIGGER trg_weekday_block_drugs
+BEFORE INSERT OR UPDATE OR DELETE ON drugs
+BEGIN
+    IF TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') IN ('MON','TUE','WED','THU','FRI') THEN
+        RAISE_APPLICATION_ERROR(-20010, 'Database modifications are prohibited Monday-Friday.');
+    END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_weekday_block_stock
+BEFORE INSERT OR UPDATE OR DELETE ON stock_batches
+BEGIN
+    IF TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') IN ('MON','TUE','WED','THU','FRI') THEN
+        RAISE_APPLICATION_ERROR(-20010, 'Database modifications are prohibited Monday-Friday.');
+    END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_weekday_block_dispensing
+BEFORE INSERT OR UPDATE OR DELETE ON dispensing
+BEGIN
+    IF TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') IN ('MON','TUE','WED','THU','FRI') THEN
+        RAISE_APPLICATION_ERROR(-20010, 'Database modifications are prohibited Monday-Friday.');
+    END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_public_holiday_drugs
+BEFORE INSERT OR UPDATE OR DELETE ON drugs
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count FROM public_holidays WHERE holiday_date = TRUNC(SYSDATE);
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20020, 'Database modifications are not allowed on public holidays.');
+    END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_public_holiday_stock
+BEFORE INSERT OR UPDATE OR DELETE ON stock_batches
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count FROM public_holidays WHERE holiday_date = TRUNC(SYSDATE);
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20020, 'Database modifications are not allowed on public holidays.');
+    END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_public_holiday_dispensing
+BEFORE INSERT OR UPDATE OR DELETE ON dispensing
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count FROM public_holidays WHERE holiday_date = TRUNC(SYSDATE);
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20020, 'Database modifications are not allowed on public holidays.');
+    END IF;
+END;
+/
