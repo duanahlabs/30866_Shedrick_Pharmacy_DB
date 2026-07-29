@@ -1,10 +1,3 @@
--- Goes in: PL\SQL Program/Security Restriction
--- Business rule: block INSERT/UPDATE/DELETE on weekdays and public
--- holidays. RUN THIS LAST -- once it exists, it blocks further
--- inserts on drugs/stock_batches/dispensing on weekdays, including
--- your own testing. Broadened from "drugs only" to all three
--- transactional tables so the rule actually protects the database.
-
 CREATE OR REPLACE TRIGGER trg_weekday_block_drugs
 BEFORE INSERT OR UPDATE OR DELETE ON drugs
 BEGIN
