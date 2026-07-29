@@ -1,0 +1,45 @@
+Query 1: Display all drugs
+SQL:
+SELECT * FROM DRUGS;
+Explanation:
+Retrieves all records stored in the DRUGS table. It helps users view available medicines and their details.
+
+Query 2: Check available stock
+SQL:
+SELECT batch_id, quantity_received, quantity_available
+FROM STOCK_BATCHES;
+Explanation:
+Displays the quantity received and current available quantity for each drug batch. It supports inventory monitoring.
+
+Query 3: Find expired drugs
+SQL:
+SELECT *
+FROM STOCK_BATCHES
+WHERE EXPIRY_DATE < SYSDATE;
+Explanation:
+Identifies medicines that have passed their expiry date to prevent unsafe dispensing.
+
+Query 4: Count total drugs
+SQL:
+SELECT COUNT(*) AS TOTAL_DRUGS
+FROM DRUGS;
+Explanation:
+Counts the number of medicines registered in the pharmacy database.
+
+Query 5: Stock by supplier
+SQL:
+SELECT s.supplier_name, COUNT(d.drug_id)
+FROM suppliers s
+JOIN drugs d
+ON s.supplier_id = d.supplier_id
+GROUP BY s.supplier_name;
+Explanation:
+Shows how many drugs are supplied by each supplier and supports supplier analysis.
+
+Query 6: Low stock alert
+SQL:
+SELECT *
+FROM STOCK_BATCHES
+WHERE QUANTITY_AVAILABLE < 20;
+Explanation:
+Finds medicines with low stock levels that may require restocking.
