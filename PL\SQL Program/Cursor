@@ -17,4 +17,3 @@ BEGIN
     CLOSE low_stock_cursor;
 END;
 /
- 
