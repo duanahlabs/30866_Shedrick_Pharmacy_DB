@@ -123,7 +123,7 @@ The first decision gateway — prescription validity — protects patient safety
 
 The payment step, handled by the cashier, is modeled as running in parallel with dispensing rather than sequentially after it, since in practice payment and dispensing are tightly coupled but performed by different staff members. Finally, every step in this diagram that changes data — verification outcome, dispensing, stock deduction, and the reorder alert — corresponds directly to a database write that must be captured by the audit logging system built in Phase VII. This is the deliberate link between the business process model and the technical implementation: the swimlane diagram is not just documentation, it is the specification for which operations require triggers, which tables require audit columns, and which business rule (the weekday/holiday DML restriction) needs to be enforced at the database level.
 
-# Phase III — Logical Database Design
+# Logical Database Design
 
 ---
 
