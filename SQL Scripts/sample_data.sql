@@ -1,4 +1,3 @@
-
 INSERT INTO suppliers VALUES (1, 'MedSource Rwanda Ltd', 'Alice Uwase', '0788111222', 'alice@medsource.rw', 'Kigali, KG 15 Ave');
 INSERT INTO suppliers VALUES (2, 'PharmaCare Distributors', 'Eric Habimana', '0788333444', 'eric@pharmacare.rw', 'Kigali, KN 4 St');
 INSERT INTO suppliers VALUES (3, 'East Africa Pharma Supply', 'Grace Mukamana', '0788555666', 'grace@eapharma.com', 'Kigali, KG 9 Ave');
