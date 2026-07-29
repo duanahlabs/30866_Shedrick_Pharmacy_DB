@@ -1,4 +1,3 @@
-Function 1: check_stock
 CREATE OR REPLACE FUNCTION check_stock (
     p_batch_id NUMBER
 ) RETURN NUMBER IS
@@ -8,12 +7,11 @@ BEGIN
     INTO v_quantity
     FROM stock_batches
     WHERE batch_id = p_batch_id;
- 
+
     RETURN v_quantity;
 END;
 /
- 
-Function 2: expiry_status
+
 CREATE OR REPLACE FUNCTION expiry_status (
     p_expiry_date DATE
 ) RETURN VARCHAR2 IS
