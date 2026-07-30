@@ -145,6 +145,10 @@ The payment step, handled by the cashier, is modeled as running in parallel with
 | **AUDIT_LOG** | audit_id PK, table_name, operation_type, db_user, operation_date, old_value, new_value (populated entirely by triggers, no FK) |
 
 ---
+# Entity Relationship Diagram
+
+`30866_Shedrick_Pharmacy_DB` — Pharmacy Inventory & Prescription Tracking System
+
 
 ```mermaid
 erDiagram
