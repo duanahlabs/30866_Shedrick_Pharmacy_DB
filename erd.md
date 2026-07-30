@@ -1,4 +1,4 @@
-# Phase III — Entity Relationship Diagram
+# Entity Relationship Diagram
 
 `30866_Shedrick_Pharmacy_DB` — Pharmacy Inventory & Prescription Tracking System
 
