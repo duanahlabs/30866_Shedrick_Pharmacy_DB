@@ -146,6 +146,130 @@ The payment step, handled by the cashier, is modeled as running in parallel with
 
 ---
 
+```mermaid
+erDiagram
+    SUPPLIERS ||--o{ STOCK_BATCHES : supplies
+    DRUGS ||--o{ STOCK_BATCHES : "has batches of"
+    DRUGS ||--o{ PRESCRIPTION_ITEMS : "prescribed as"
+    PATIENTS ||--o{ PRESCRIPTIONS : has
+    DOCTORS ||--o{ PRESCRIPTIONS : issues
+    PRESCRIPTIONS ||--o{ PRESCRIPTION_ITEMS : contains
+    PRESCRIPTION_ITEMS ||--o{ DISPENSING : "dispensed via"
+    STOCK_BATCHES ||--o{ DISPENSING : "deducted from"
+    EMPLOYEES ||--o{ DISPENSING : performs
+    EMPLOYEES ||--o{ SALES : processes
+    PRESCRIPTIONS ||--|| SALES : "paid by"
+
+    SUPPLIERS {
+        number supplier_id PK
+        string supplier_name
+        string contact_person
+        string phone
+        string email
+        string address
+    }
+
+    DRUGS {
+        number drug_id PK
+        string drug_name
+        string generic_name
+        string dosage_form
+        string strength
+        string category
+        number unit_price
+        number reorder_level
+    }
+
+    STOCK_BATCHES {
+        number batch_id PK
+        number drug_id FK
+        number supplier_id FK
+        string batch_number
+        number quantity_received
+        number quantity_available
+        date manufacture_date
+        date expiry_date
+        date date_received
+    }
+
+    PATIENTS {
+        number patient_id PK
+        string first_name
+        string last_name
+        string gender
+        date date_of_birth
+        string phone
+    }
+
+    DOCTORS {
+        number doctor_id PK
+        string first_name
+        string last_name
+        string specialization
+        string phone
+    }
+
+    EMPLOYEES {
+        number employee_id PK
+        string first_name
+        string last_name
+        string role
+        string username
+        date hire_date
+        string phone
+    }
+
+    PRESCRIPTIONS {
+        number prescription_id PK
+        number patient_id FK
+        number doctor_id FK
+        date prescription_date
+        string status
+    }
+
+    PRESCRIPTION_ITEMS {
+        number prescription_item_id PK
+        number prescription_id FK
+        number drug_id FK
+        number quantity_prescribed
+        string dosage_instructions
+    }
+
+    DISPENSING {
+        number dispensing_id PK
+        number prescription_item_id FK
+        number batch_id FK
+        number employee_id FK
+        number quantity_dispensed
+        date dispensing_date
+    }
+
+    SALES {
+        number sale_id PK
+        number prescription_id FK
+        number employee_id FK
+        number total_amount
+        date payment_date
+        string payment_method
+    }
+
+    PUBLIC_HOLIDAYS {
+        number holiday_id PK
+        date holiday_date
+        string holiday_name
+    }
+
+    AUDIT_LOG {
+        number audit_id PK
+        string table_name
+        string operation
+        number record_id
+        string old_value
+        string new_value
+        string changed_by
+        date change_date
+    }
+```
 ## 2. Relationships
 
 - **DOCTORS** 1:M **PRESCRIPTIONS**
